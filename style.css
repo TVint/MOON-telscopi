@@ -1,0 +1,233 @@
+/* --- FONTS & VARIABILI --- */
+@font-face {
+  font-family: 'Futura PT Demi';
+  src: url('fonts/FuturaPT-Demi.woff2') format('woff2');
+  font-weight: 600; font-style: normal;
+}
+@font-face {
+  font-family: 'Futura PT Demi Oblique';
+  src: url('fonts/FuturaPT-DemiOblique.woff2') format('woff2');
+  font-weight: 600; font-style: italic;
+}
+
+:root {
+  --bg-deep: #050a14;
+  --text-light: #e8eaef;
+  --cat-spaziali: #21345b;
+  --cat-ottici: #8b8bc6;
+  --cat-radio: #b72944;
+  --cat-gravitazionali: #e07c8d;
+  --sidebar-width: 65px; /* Larghezza colonna filtri */
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+  background-color: var(--bg-deep); color: var(--text-light);
+  font-family: 'Futura PT Demi', sans-serif;
+  overflow-x: hidden; padding-bottom: 70px;
+}
+
+/* --- CLASSI TIPOGRAFICHE RIGOROSE --- */
+.text-it { font-family: 'Futura PT Demi', sans-serif; font-style: normal; }
+.text-en { font-family: 'Futura PT Demi Oblique', sans-serif; font-style: italic; }
+
+/* --- EFFETTI SPAZIALI: GRANA E STELLE --- */
+.star-layer {
+  position: absolute; /* Absolute permette di coprire tutto lo scroll */
+  top: 0; left: 0;
+  z-index: 1; pointer-events: none;
+  background: transparent;
+  border-radius: 50%;
+  will-change: transform, opacity; /* Ottimizza le prestazioni su mobile */
+}
+
+/* Dimensioni diverse e animazioni asincrone per un effetto naturale */
+#star-layer-1 { 
+  width: 1.5px; height: 1.5px; 
+  animation: pulse1 4s infinite ease-in-out; 
+}
+#star-layer-2 { 
+  width: 2.5px; height: 2.5px; 
+  animation: pulse2 3s infinite ease-in-out; 
+}
+#star-layer-3 { 
+  width: 4px; height: 4px; 
+  animation: pulse3 2.5s infinite ease-in-out; 
+}
+
+/* Animazioni sfasate per non far lampeggiare lo schermo tutto insieme */
+@keyframes pulse1 { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+@keyframes pulse2 { 0%, 100% { opacity: 0.1; } 50% { opacity: 1; } }
+@keyframes pulse3 { 0%, 100% { opacity: 0.8; } 50% { opacity: 0.3; } }
+
+/* Comete */
+.comet {
+  position: fixed; width: 2px; height: 100px; z-index: 1; pointer-events: none;
+  background: linear-gradient(to bottom, rgba(255,255,255,1), transparent);
+  border-radius: 50%; transform: rotate(45deg); opacity: 0;
+}
+.comet-1 { top: -100px; left: 30%; animation: shoot 15s infinite linear; animation-delay: 2s; }
+.comet-2 { top: 10%; right: -50px; animation: shoot 25s infinite linear; animation-delay: 12s; }
+@keyframes shoot { 0% { opacity: 1; transform: translate(0, 0) rotate(45deg); } 5% { opacity: 0; transform: translate(-150vw, 150vh) rotate(45deg); } 100% { opacity: 0; } }
+
+/* --- SIDEBAR FILTRI --- */
+.side-filters {
+  position: fixed; top: 0; left: 0; width: var(--sidebar-width); height: 100vh;
+  display: flex; flex-direction: column;
+  background: rgba(5, 10, 20, 0.95); backdrop-filter: blur(10px);
+  border-right: 1px solid rgba(255,255,255,0.1); 
+  padding: 0; /* Rimosso il padding per occupare esattamente il 100% */
+  z-index: 100;
+}
+/* Sidebar Filtri: Layout ottimizzato */
+.filter-btn {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: transparent; border: none; 
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  color: rgba(232, 234, 239, 0.4);
+  cursor: pointer; transition: all 0.3s ease;
+  flex: 1; /* Default per i primi 4 */
+}
+
+/* Diamo più "peso" (altezza) al pulsante gravitazionali */
+.filter-btn[data-filter="gravitazionali"] {
+  flex: 1.5; /* Occupa il 50% in più rispetto agli altri */
+}
+
+.filter-btn svg { width: 20px; height: 20px; margin-bottom: 8px; }
+.vertical-text { 
+  writing-mode: vertical-rl; transform: rotate(180deg); 
+  font-size: 0.65rem; /* Font leggermente più piccolo per gestire il testo lungo */
+  letter-spacing: 1px; text-transform: uppercase;
+}
+
+.filter-btn:last-child { border-bottom: none; } /* Rimuove la riga sotto l'ultimo pulsante */
+
+.filter-btn svg { width: 22px; height: 22px; margin-bottom: 12px; }
+.vertical-text { 
+  writing-mode: vertical-rl; transform: rotate(180deg); 
+  font-size: 0.75rem; letter-spacing: 1.5px; text-transform: uppercase;
+}
+.filter-btn.active { color: var(--btn-color); filter: drop-shadow(0 0 5px var(--btn-color)); }
+
+/* --- CONTENITORE PRINCIPALE (Traslato a Destra) --- */
+.main-content-wrapper {
+  margin-left: var(--sidebar-width); position: relative; z-index: 2;
+  display: flex; flex-direction: column; min-height: 100vh;
+}
+
+header {
+  display: flex; justify-content: center; padding: 25px 15px 15px;
+  background: linear-gradient(to bottom, var(--bg-deep) 60%, transparent);
+  position: sticky; top: 0; z-index: 10;
+}
+.logo-container { width: 130px; }
+.logo-container img { width: 100%; display: block; }
+
+/* --- TIMELINE: CARD A SINISTRA, ANNO A DESTRA --- */
+.timeline-container { flex: 1; display: flex; flex-direction: column; gap: 40px; padding: 10px 15px 40px; max-width: 600px; margin: 0 auto; width: 100%; }
+.timeline-row { 
+  display: grid; 
+  grid-template-columns: 1fr 50px; /* Invertito: Card -> Anno */
+  align-items: center; gap: 15px; transition: all 0.5s ease; 
+}
+.timeline-year-col { display: flex; justify-content: center; align-items: center; height: 120px; }
+.vertical-year { 
+  font-size: 1.8rem; font-weight: 900; transform: rotate(-90deg); 
+  white-space: nowrap; color: var(--cat-color); text-shadow: 0 0 10px rgba(0,0,0,0.8); 
+}
+
+/* Sci-Fi Card */
+.card-wrapper {
+  background: var(--cat-color); padding: 3px; 
+  clip-path: polygon(0 0, calc(100% - 30px) 0, 100% 30px, 100% 100%, 0 100%);
+  cursor: pointer; box-shadow: 0 8px 25px rgba(0,0,0,0.5); transition: transform 0.2s ease;
+}
+.card-wrapper:active { transform: scale(0.96); }
+.telescope-card {
+  background:var(--bg-deep);
+  clip-path: polygon(0 0, calc(100% - 28px) 0, 100% 28px, 100% 100%, 0 100%);
+  display: flex; flex-direction: column; height: 100%;
+}
+.image-container img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; display: block; }
+.card-info { padding: 15px; }
+.card-info h3 { font-size: 1.15rem; color: var(--cat-color); text-transform: uppercase; }
+
+/* Transizioni Timeline */
+.fade-out { opacity: 0; transform: scale(0.8) translateY(20px); pointer-events: none; }
+.hidden { display: none !important; }
+
+/* --- BOTTOM BAR (Traslata a destra) --- */
+.bottom-bar {
+  position: fixed; bottom: 0; left: var(--sidebar-width); width: calc(100% - var(--sidebar-width)); height: 70px;
+  background: rgba(5, 10, 20, 0.9); backdrop-filter: blur(15px);
+  border-top: 1px solid rgba(255,255,255,0.1); cursor: pointer; z-index: 90;
+  display: flex; justify-content: center; align-items: center; transition: background 0.2s;
+}
+.bottom-bar:active { background: rgba(20, 34, 61, 0.9); }
+.bottom-bar-content { color: var(--text-light); display: flex; align-items: center; justify-content: center; width: 100%; }
+.bottom-bar-content svg { width: 32px; height: 32px; }
+
+/* --- MENU FULL SCREEN (SLIDE UP) --- */
+.fullscreen-menu {
+  position: fixed; inset: 0; background: var(--bg-deep); z-index: 200;
+  transform: translateY(100%); transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto; pointer-events: none;
+}
+.fullscreen-menu.open { transform: translateY(0); pointer-events: auto; }
+.menu-content { padding: 70px 20px 40px; max-width: 600px; margin: 0 auto; }
+.menu-list-item {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 18px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+  cursor: pointer; font-size: 1.2rem; color: var(--cat-color);
+}
+.menu-list-item .year { font-size: 1rem; opacity: 0.8; }
+
+/* --- OVERLAY DETTAGLIO SCHEDA --- */
+.overlay {
+  position: fixed; inset: 0; background: var(--bg-deep); z-index: 100;
+  opacity: 0; pointer-events: none; transform: scale(0.95);
+  overflow-y: auto; transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.overlay.open { opacity: 1; pointer-events: auto; transform: scale(1); }
+.overlay-bg-stars { position: fixed; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(circle at center, #0e1b33 0%, #050a14 100%); opacity: 0.5; }
+.overlay-header-bar { height: 8px; width: 100%; position: fixed; top: 0; left: 0; background-color: var(--bar-color); z-index: 102; }
+.close-btn {
+  position: fixed; top: 20px; right: 20px; width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(5, 10, 20, 0.8); backdrop-filter: blur(5px); border: 2px solid var(--text-light);
+  color: var(--text-light); font-size: 1.8rem; line-height: 40px; text-align: center; cursor: pointer; z-index: 103;
+}
+.overlay-content { padding: 70px 24px 60px 24px; max-width: 600px; margin: 0 auto; position: relative; z-index: 2; }
+
+/* Immagine con badge anno */
+.overlay-img-wrapper {
+  background: var(--bar-color); padding: 4px; margin-bottom: 30px; position: relative;
+  clip-path: polygon(0 0, calc(100% - 40px) 0, 100% 40px, 100% 100%, 0 100%);
+}
+.overlay-img {
+  width: 100%; display: block;
+  clip-path: polygon(0 0, calc(100% - 37px) 0, 100% 37px, 100% 100%, 0 100%);
+}
+.modal-year-badge {
+  position: absolute; bottom: 15px; right: 15px; background: rgba(5, 10, 20, 0.9);
+  color: var(--bar-color); font-size: 1.4rem; font-weight: 900; padding: 5px 15px;
+  border-radius: 4px; border: 1px solid var(--bar-color); backdrop-filter: blur(5px);
+}
+
+/* Meta Data List */
+.overlay-meta {
+  margin-bottom: 30px; padding: 25px 20px; background: rgba(14, 27, 51, 0.8);
+  border-radius: 0; border-left: 4px solid var(--bar-color);
+  display: flex; flex-direction: column; gap: 18px;
+}
+.meta-row { display: flex; flex-direction: column; gap: 4px; }
+.meta-title { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--bar-color); font-weight: 900; }
+.meta-value { font-size: 1.1rem; color: #fff; line-height: 1.4; }
+
+/* Testi Sezioni */
+.lang-section h2 { font-size: 1.8rem; margin-bottom: 12px; color: var(--bar-color); text-transform: uppercase; }
+.lang-section p { font-size: 1.1rem; line-height: 1.5; margin-bottom: 15px; }
+.did-you-know { padding-left: 12px; border-left: 3px solid var(--bar-color); opacity: 0.9; }
+
+.divider { margin: 40px 0; border: 0; border-top: 1px solid rgba(255,255,255,0.2); }
